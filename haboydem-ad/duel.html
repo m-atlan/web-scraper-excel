@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>הבוידעם · דו־קרב</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@500;700;900&family=Suez+One&display=swap">
+<style>
+/* A 540x960 (9:16) stage. #world is the table seen from above and is moved as a
+   whole to act as the camera; captions and the intro/end cards sit on top of it. */
+:root {
+  --wall: #F3EAD6; --wall-shade: #E4D7BC; --paper: #FBF6EC;
+  --ink: #2A1E17; --ink-soft: #5E544B;
+  --teal: #1D5A62; --teal-wall: #4A979C;
+  --wood: #C58A54; --wood-line: #B07743; --wood-dark: #7A4A26;
+  --plate: #E9B93F; --skin: #EDBE9B;
+  --display: "Suez One", "Heebo", "Arial Hebrew", serif;
+  --body: "Heebo", "Arial Hebrew", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; background: var(--ink); overflow: hidden; }
+body { font-family: var(--body); color: var(--ink); }
+#stage { position: absolute; left: 50%; top: 50%; width: 540px; height: 960px; overflow: hidden;
+  transform-origin: 0 0; background: var(--wood); }
+#world { position: absolute; left: 0; top: 0; width: 540px; height: 960px; }
+.table { position: absolute; inset: -600px;
+  background: repeating-linear-gradient(90deg, var(--wood) 0 118px, var(--wood-line) 118px 120px); }
+
+/* props */
+.cup { position: absolute; left: 443px; top: 150px; width: 70px; height: 70px; border-radius: 50%;
+  background: var(--paper); border: 3px solid var(--ink); box-shadow: 5px 7px 0 rgba(42,30,23,.25); }
+.cup::before { content: ""; position: absolute; inset: 9px; border-radius: 50%; background: #6B4226; border: 3px solid var(--ink); }
+.cup::after { content: ""; position: absolute; right: -19px; top: 22px; width: 20px; height: 22px;
+  border: 3px solid var(--ink); border-left: 0; border-radius: 0 12px 12px 0; background: var(--paper); }
+.pencil { position: absolute; left: 40px; top: 820px; width: 150px; height: 12px; rotate: -24deg;
+  background: linear-gradient(90deg, var(--ink) 0 10px, var(--skin) 10px 26px, var(--plate) 26px 136px, #E88 136px);
+  border: 3px solid var(--ink); border-radius: 3px; box-shadow: 3px 5px 0 rgba(42,30,23,.25); }
+
+/* phones */
+.phone { position: absolute; top: 290px; width: 210px; height: 420px; padding: 8px;
+  background: var(--ink); border-radius: 26px; box-shadow: 8px 12px 0 rgba(42,30,23,.28); }
+.screen { height: 100%; border-radius: 19px; background: var(--wall); padding: 8px 10px; overflow: hidden; }
+.hdr { height: 28px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; font-size: 13px; font-weight: 700; }
+.hdr .nm { font-family: var(--display); font-size: 17px; font-weight: 400; }
+.hdr .sc { background: var(--paper); border: 2px solid var(--ink); border-radius: 20px; padding: 0 9px; line-height: 20px; }
+.hdr .sc b { font-family: var(--display); font-weight: 400; font-size: 14px; }
+.notes { position: relative; height: 112px; }
+.note { position: absolute; inset: 0; background: var(--paper); padding: 10px 10px 8px; border-radius: 3px;
+  box-shadow: 0 4px 9px rgba(42,30,23,.22); }
+.note small { display: block; font-size: 10px; font-weight: 500; color: var(--ink-soft); }
+.note h3 { margin: 4px 0 0; font-family: var(--display); font-weight: 400; font-size: 27px; line-height: 1.12; }
+.note.long h3 { font-size: 17.5px; }
+.inp { margin-top: 10px; height: 44px; border: 2px solid var(--ink); border-radius: 12px; background: var(--paper);
+  display: flex; align-items: center; padding: 0 12px; font-weight: 700; font-size: 18px; white-space: nowrap; }
+.inp i { width: 2px; height: 22px; background: var(--teal); margin-inline-start: 2px; }
+.send { margin-top: 8px; height: 44px; border-radius: 12px; background: var(--teal); color: var(--paper);
+  border: 2px solid var(--ink); box-shadow: 0 3px 0 var(--ink);
+  display: grid; place-items: center; font-weight: 700; font-size: 16px; }
+.stamps { position: relative; height: 130px; margin-top: 10px; }
+.stamp { position: absolute; left: 50%; top: 50%; width: 136px; margin: -48px 0 0 -68px; padding: 6px 4px 8px;
+  text-align: center; border: 3px solid var(--teal); color: var(--teal); border-radius: 12px; background: rgba(251,246,236,.7); }
+.stamp b { display: block; font-family: var(--display); font-weight: 400; font-size: 44px; line-height: 1; }
+.stamp span { font-weight: 900; font-size: 17px; }
+.stamp.top { background: var(--plate); border-color: var(--ink); color: var(--ink); }
+
+/* fingers, taps, sparks */
+.finger { position: absolute; left: 0; top: 0; width: 44px; height: 640px; border-radius: 22px;
+  border: 3px solid var(--ink);
+  background: linear-gradient(var(--skin) 0 170px, var(--ink) 170px 173px, var(--sleeve) 173px); }
+.finger::before { content: ""; position: absolute; top: 6px; left: 9px; width: 20px; height: 17px;
+  border-radius: 9px 9px 5px 5px; background: #F8DCC6; border: 2px solid var(--ink); }
+.rip { position: absolute; width: 44px; height: 44px; border-radius: 50%; border: 4px solid var(--paper);
+  background: rgba(251,246,236,.35); }
+.spark { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: var(--plate); border: 2px solid var(--ink); }
+
+/* score tags above the phones */
+.tag { position: absolute; top: 204px; width: 104px; height: 74px; text-align: center;
+  background: var(--paper); border: 3px solid var(--ink); border-radius: 14px; box-shadow: 4px 6px 0 rgba(42,30,23,.28); }
+.tag span { display: block; font-weight: 700; font-size: 13px; margin-top: 5px; }
+.tag b { display: block; font-family: var(--display); font-weight: 400; font-size: 34px; line-height: 1; }
+.tag em { position: absolute; left: -22px; top: -16px; font-style: normal; font-family: var(--display); font-size: 15px;
+  background: var(--teal); color: var(--paper); border: 2px solid var(--ink); border-radius: 8px; padding: 1px 9px; rotate: -12deg; }
+
+/* captions */
+.cap { position: absolute; top: 34px; left: 14px; right: 14px; text-align: center; }
+.cap span { display: inline-block; background: var(--paper); padding: 8px 18px 10px; border-radius: 4px; rotate: -1.5deg;
+  font-family: var(--display); font-size: 29px; line-height: 1.15; box-shadow: 0 7px 0 rgba(42,30,23,.3); }
+mark { background: var(--plate); color: inherit; padding: 0 7px; border-radius: 5px; }
+
+/* intro + end cards */
+.card { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 14px; text-align: center; padding: 0 28px;
+  background: radial-gradient(rgba(42,30,23,.14) 1px, transparent 1.3px) 0 0 / 8px 8px, var(--wall); }
+.il { font-family: var(--display); font-size: 62px; line-height: 1.05; }
+.il.q { font-size: 44px; margin-top: 18px; }
+#end { background: linear-gradient(to bottom, transparent 0 80%, var(--teal-wall) 80%),
+  radial-gradient(rgba(42,30,23,.14) 1px, transparent 1.3px) 0 0 / 8px 8px, var(--wall); }
+.door { width: 330px; padding: 34px 0 40px; border-radius: 6px; border: 4px solid var(--ink);
+  background: repeating-linear-gradient(90deg, #B8733E 0 54px, #A96936 54px 56px);
+  box-shadow: inset 0 0 0 12px #A0622F, 8px 10px 0 rgba(42,30,23,.22); }
+.door b { font-family: var(--display); font-weight: 400; font-size: 60px; line-height: 1.1;
+  background: var(--plate); border: 4px solid var(--ink); border-radius: 9px; padding: 0 20px 4px; }
+.e-h { font-family: var(--display); font-size: 52px; line-height: 1.08; margin-top: 16px; }
+.e-s { font-size: 21px; font-weight: 700; color: var(--ink-soft); }
+.e-u { margin-top: 10px; font-size: 25px; font-weight: 900; direction: ltr; background: var(--teal); color: var(--paper);
+  border: 3px solid var(--ink); border-radius: 14px; padding: 12px 30px; box-shadow: 0 5px 0 var(--ink); }
+#replay { position: absolute; left: 14px; bottom: 14px; font: 700 14px var(--body); background: var(--paper);
+  border: 2px solid var(--ink); border-radius: 10px; padding: 6px 12px; cursor: pointer; }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <div class="table"></div>
+    <div class="cup"></div>
+    <div class="pencil"></div>
+  </div>
+
+  <div class="card" id="intro">
+    <div class="il">אותה שאלה.</div>
+    <div class="il">שני שחקנים.</div>
+    <div class="il q">מי ישלוף תשובה <mark>נדירה</mark> יותר?</div>
+  </div>
+
+  <div class="card" id="end">
+    <div class="door ei"><b>הבוידעם</b></div>
+    <div class="e-h ei">בואו לשחק בבוידעם</div>
+    <div class="e-s ei">7 שאלות חדשות בכל יום</div>
+    <div class="e-u ei">haboydem.co.il</div>
+  </div>
+  <button id="replay" type="button" hidden>הפעלה מחדש</button>
+</div>
+
+<script src="gsap.min.js"></script>
+<script>
+(function () {
+  var REC = /[?&]rec=1/.test(location.search);
+  var stage = document.getElementById('stage'), world = document.getElementById('world');
+
+  function fit() {
+    var s = Math.min(innerWidth / 540, innerHeight / 960);
+    stage.style.transform = 'scale(' + s + ') translate(-50%, -50%)';
+  }
+  fit(); addEventListener('resize', fit);
+
+  // Demo content. Points are illustrative, not real game data.
+  var ROUNDS = [
+    { q: 'פרי הדר', long: false,
+      a: { w: 'תפוז', place: 'השולחן', pts: 10 }, b: { w: 'אתרוג', place: 'הבוידעם', pts: 100 } },
+    { q: 'מדינה שיש בדגל שלה בדיוק שלושה צבעים', long: true,
+      a: { w: 'איטליה', place: 'המקרר', pts: 20 }, b: { w: 'ליטא', place: 'המחסן', pts: 85 } }
+  ];
+  var P = {
+    a: { key: 'a', name: 'נועם', cx: 390, rot: 2, frot: -18, tx: 38, sleeve: '#E9B93F', score: { v: 0 } },
+    b: { key: 'b', name: 'עומר', cx: 150, rot: -2, frot: 18, tx: -38, sleeve: '#1D5A62', score: { v: 0 } }
+  };
+  var Y_INPUT = 478, Y_SEND = 530;
+
+  function el(cls, html, parent) {
+    var d = document.createElement('div'); d.className = cls; if (html) d.innerHTML = html;
+    (parent || world).appendChild(d); return d;
+  }
+
+  Object.keys(P).forEach(function (k) {
+    var p = P[k];
+    var notes = '', stamps = '', spans = '';
+    ROUNDS.forEach(function (r, i) {
+      notes += '<div class="note n' + i + (r.long ? ' long' : '') + '"><small>סבב ' + (i + 1) + ' מתוך 7</small><h3>' + r.q + '</h3></div>';
+      stamps += '<div class="stamp s' + i + (r[k].pts === 100 ? ' top' : '') + '"><b>' + r[k].pts + '</b><span>' + r[k].place + '</span></div>';
+      spans += '<span class="t' + i + '"></span>';
+    });
+    p.phone = el('phone', '<div class="screen"><div class="hdr"><span class="nm">' + p.name + '</span><span class="sc">ניקוד <b>0</b></span></div>' +
+      '<div class="notes">' + notes + '</div><div class="inp">' + spans + '<i></i></div><div class="send">שליחה</div><div class="stamps">' + stamps + '</div></div>');
+    p.phone.style.left = (p.cx - 105) + 'px';
+    p.phone.style.rotate = p.rot + 'deg';
+    p.tag = el('tag', '<span>' + p.name + '</span><b>0</b>');
+    p.tag.style.left = (p.cx - 52) + 'px';
+  });
+  P.b.win = document.createElement('em'); P.b.win.textContent = 'ניצחון!'; P.b.tag.appendChild(P.b.win);
+  Object.keys(P).forEach(function (k) {
+    var p = P[k];
+    p.finger = el('finger'); p.finger.style.setProperty('--sleeve', p.sleeve);
+    gsap.set(p.finger, { x: p.cx + p.tx - 22, y: 1150, rotation: p.frot, transformOrigin: '22px 8px' });
+    gsap.set(p.tag, { scale: 0, transformOrigin: '50% 100%' });
+  });
+  gsap.set(P.b.win, { scale: 0 });
+  gsap.set('.note', { opacity: 0, scale: 1.25, y: -24 });
+  gsap.set('.stamp', { opacity: 0, scale: 2.2, rotation: -26 });
+
+  function cam(cx, cy, s) { return { x: 270 - cx * s, y: 480 - cy * s, scale: s }; }
+  gsap.set(world, Object.assign({ transformOrigin: '0 0' }, cam(270, 500, 1.5)));
+  gsap.set('.il', { opacity: 0, y: 44 });
+  gsap.set('#end', { yPercent: 100 });
+  gsap.set('.ei', { opacity: 0, y: 40, scale: .9 });
+
+  var tl = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } });
+
+  function cap(html, at, out) {
+    var d = el('cap', '<span>' + html + '</span>', stage);
+    gsap.set(d, { opacity: 0, y: -30, scale: .9 });
+    tl.to(d, { opacity: 1, y: 0, scale: 1, duration: .35, ease: 'back.out(1.6)' }, at);
+    tl.to(d, { opacity: 0, y: -20, duration: .25, ease: 'power2.in' }, out);
+  }
+  function tap(p, y, at, target) {
+    var x = p.cx + p.tx;
+    tl.to(p.finger, { x: x - 22, y: y - 6, duration: .4 }, at);
+    tl.to(p.finger, { scale: .93, duration: .08, ease: 'power1.in' }, at + .4);
+    tl.to(p.finger, { scale: 1, duration: .16 }, at + .48);
+    var r = el('rip'); r.style.left = (x - 22) + 'px'; r.style.top = (y - 22) + 'px';
+    gsap.set(r, { opacity: 0, scale: .3 });
+    tl.set(r, { opacity: .95 }, at + .42);
+    tl.to(r, { scale: 2.3, opacity: 0, duration: .45, ease: 'power2.out' }, at + .43);
+    if (target) {
+      tl.to(target, { scale: .94, duration: .08, ease: 'power1.in' }, at + .4);
+      tl.to(target, { scale: 1, duration: .16 }, at + .48);
+    }
+  }
+  function setScore(p) {
+    var v = Math.round(p.score.v);
+    p.phone.querySelector('.sc b').textContent = v;
+    p.tag.querySelector('b').textContent = v;
+  }
+  function play(p, i, at, total) {
+    var ans = ROUNDS[i][p.key], span = p.phone.querySelector('.t' + i), o = { n: 0 };
+    p['type' + i] = { o: o, span: span, w: ans.w };
+    tap(p, Y_INPUT, at);
+    tl.to(o, { n: ans.w.length, duration: .7, ease: 'none', onUpdate: function () { span.textContent = ans.w.slice(0, Math.round(o.n)); } }, at + .6);
+    tap(p, Y_SEND, at + 1.4, p.phone.querySelector('.send'));
+    tl.to(p.phone.querySelector('.s' + i), { opacity: 1, scale: 1, rotation: -8, duration: .35, ease: 'back.out(2)' }, at + 1.95);
+    tl.to(p.score, { v: total, duration: .55, ease: 'power1.out', onUpdate: function () { setScore(p); } }, at + 1.95);
+    tl.to(p.finger, { y: 1150, duration: .32, ease: 'power1.in' }, at + 2.0);
+  }
+  function clearRound(p, i, at) {
+    var t = p['type' + i];
+    tl.to(t.o, { n: 0, duration: .15, ease: 'none', onUpdate: function () { t.span.textContent = t.w.slice(0, Math.round(t.o.n)); } }, at);
+    tl.to([p.phone.querySelector('.n' + i), p.phone.querySelector('.s' + i)], { opacity: 0, scale: .8, duration: .25, ease: 'power2.in' }, at);
+  }
+
+  /* ---- 0.0  intro ---- */
+  var il = document.querySelectorAll('.il');
+  tl.to(il[0], { opacity: 1, y: 0, duration: .45 }, .15);
+  tl.to(il[1], { opacity: 1, y: 0, duration: .45 }, .8);
+  tl.to(il[2], { opacity: 1, y: 0, duration: .45 }, 1.45);
+  tl.to('#intro', { yPercent: -100, duration: .7, ease: 'power3.inOut' }, 2.6);
+  tl.to(world, Object.assign(cam(270, 480, 1), { duration: 1.1, ease: 'power3.inOut' }), 2.6);
+
+  /* ---- 3.1  round 1 ---- */
+  tl.to('.n0', { opacity: 1, scale: 1, y: 0, duration: .45, ease: 'back.out(1.5)', stagger: .12 }, 3.1);
+  cap('סבב 1', 3.1, 4.3);
+  tl.to(world, Object.assign(cam(P.a.cx, 470, 1.9), { duration: .85, ease: 'power3.inOut' }), 4.2);
+  play(P.a, 0, 5.0, 10);
+  cap('תפוז? <mark>כולם</mark> אמרו תפוז.', 7.05, 8.45);
+  tl.to(world, Object.assign(cam(P.b.cx, 470, 1.9), { duration: .85, ease: 'power3.inOut' }), 8.3);
+  play(P.b, 0, 9.1, 100);
+  cap('אתרוג! ישר <mark>מהבוידעם</mark>.', 11.15, 12.65);
+  for (var i = 0; i < 12; i++) {
+    var s = el('spark'); s.style.left = (P.b.cx - 5) + 'px'; s.style.top = '628px';
+    var ang = i / 12 * Math.PI * 2, dist = 80 + (i % 3) * 22;
+    gsap.set(s, { opacity: 0 });
+    tl.set(s, { opacity: 1 }, 11.05);
+    tl.to(s, { x: Math.cos(ang) * dist, y: Math.sin(ang) * dist, opacity: 0, duration: .7, ease: 'power2.out' }, 11.06);
+  }
+
+  /* ---- 12.5  wide + round 2 ---- */
+  tl.to(world, Object.assign(cam(270, 470, 1.12), { duration: .85, ease: 'power3.inOut' }), 12.5);
+  tl.to([P.a.tag, P.b.tag], { scale: 1, duration: .4, ease: 'back.out(2)', stagger: .1 }, 13.0);
+  clearRound(P.a, 0, 13.4); clearRound(P.b, 0, 13.4);
+  tl.to('.n1', { opacity: 1, scale: 1, y: 0, duration: .45, ease: 'back.out(1.5)', stagger: .12 }, 13.65);
+  cap('סבב 2', 13.6, 14.7);
+  play(P.a, 1, 14.3, 30);
+  play(P.b, 1, 14.45, 185);
+
+  /* ---- 17.2  winner ---- */
+  tl.to(world, Object.assign(cam(215, 440, 1.3), { duration: .9, ease: 'power3.inOut' }), 17.2);
+  tl.to(P.b.tag, { scale: 1.3, backgroundColor: '#E9B93F', duration: .45, ease: 'back.out(2.2)' }, 17.3);
+  tl.to(P.b.win, { scale: 1, duration: .35, ease: 'back.out(2.5)' }, 17.55);
+  tl.to([P.a.phone, P.a.tag], { opacity: .5, duration: .5 }, 17.3);
+  cap('נדיר יותר = <mark>יותר נקודות</mark>', 17.4, 18.95);
+
+  /* ---- 19.0  end card ---- */
+  tl.to('#end', { yPercent: 0, duration: .65, ease: 'power3.inOut' }, 19.0);
+  tl.to('.ei', { opacity: 1, y: 0, scale: 1, duration: .45, ease: 'back.out(1.7)', stagger: .22 }, 19.45);
+  tl.to({}, { duration: 2.6 }, 20.6);
+
+  window.__tl = tl;
+  var replay = document.getElementById('replay');
+  replay.addEventListener('click', function () { replay.hidden = true; tl.restart(); });
+  var ready = (document.fonts && document.fonts.ready) || Promise.resolve();
+  ready.then(function () {
+    window.__ready = true;
+    if (!REC) { tl.eventCallback('onComplete', function () { replay.hidden = false; }); tl.play(); }
+  });
+})();
+</script>
+</body>
+</html>
